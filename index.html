@@ -4,7 +4,13 @@
   <meta charset="UTF-8">
   <title>BLYATCOIN statistika</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #000; color: #f00; text-align: center; padding: 40px; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #f00;
+      text-align: center;
+      padding: 40px;
+    }
     img { width: 120px; margin-bottom: 30px; }
     .stat { font-size: 1.5em; margin: 20px 0; }
   </style>
@@ -16,43 +22,46 @@
   <div class="stat" id="fees">Surinkta mokesčių: ...</div>
   <div class="stat" id="supply">Bendras supply: ...</div>
 
+  <!-- Ethers.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
   <script>
-    const provider = new ethers.providers.JsonRpcProvider('https://bsc-dataseed.binance.org/');
+    // ====== Parametrai ======
+    const RPC          = 'https://bsc-dataseed.binance.org/';
     const tokenAddress = '0xC73D20c5F78D8d1f7DF20eba17236e51680c0fC0';
-    const burnAddress = '0x000000000000000000000000000000000000dEaD';
-    const feeReceiver = '0x58E541A65e3F42515458E58c14933138BF13E5cC';
+    const burnAddress  = '0x000000000000000000000000000000000000dEaD';
+    const feeReceiver  = '0x58E541A65e3F42515458E58c14933138BF13E5cC';
 
+    // ====== ABI su balanceOf ======
     const abi = [
       "function totalSupply() view returns (uint256)",
       "function decimals() view returns (uint8)",
-      "event Transfer(address indexed from, address indexed to, uint256 value)"
+      "function balanceOf(address) view returns (uint256)"
     ];
 
+    // ====== Skaitymas iš blockchain ======
+    const provider = new ethers.providers.JsonRpcProvider(RPC);
     const contract = new ethers.Contract(tokenAddress, abi, provider);
 
     async function loadStats() {
-      const [totalSupply, decimals] = await Promise.all([
-        contract.totalSupply(),
-        contract.decimals()
-      ]);
+      try {
+        const [totalSupplyBN, decimals, burnBN, feeBN] = await Promise.all([
+          contract.totalSupply(),
+          contract.decimals(),
+          contract.balanceOf(burnAddress),
+          contract.balanceOf(feeReceiver)
+        ]);
 
-      const filter = contract.filters.Transfer(null, null);
-      const events = await contract.queryFilter(filter, 0, await provider.getBlockNumber());
+        const fmt = x => ethers.utils.formatUnits(x, decimals);
 
-      let burned = ethers.BigNumber.from(0);
-      let fees = ethers.BigNumber.from(0);
-
-      events.forEach(e => {
-        const { to, value } = e.args;
-        if (to.toLowerCase() === burnAddress.toLowerCase()) burned = burned.add(value);
-        if (to.toLowerCase() === feeReceiver.toLowerCase()) fees = fees.add(value);
-      });
-
-      const format = val => ethers.utils.formatUnits(val, decimals);
-      document.getElementById('burned').innerText = `Sudeginta: ${format(burned)} BLYAT`;
-      document.getElementById('fees').innerText = `Surinkta mokesčių: ${format(fees)} BLYAT`;
-      document.getElementById('supply').innerText = `Bendras supply: ${format(totalSupply)} BLYAT`;
+        document.getElementById('burned').innerText  = `Sudeginta: ${fmt(burnBN)} BLYAT`;
+        document.getElementById('fees').innerText    = `Surinkta mokesčių: ${fmt(feeBN)} BLYAT`;
+        document.getElementById('supply').innerText  = `Bendras supply: ${fmt(totalSupplyBN)} BLYAT`;
+      } catch (err) {
+        console.error(err);
+        document.getElementById('burned').innerText = 'Klaida gaunant duomenis';
+        document.getElementById('fees').innerText   = '';
+        document.getElementById('supply').innerText = '';
+      }
     }
 
     loadStats();
