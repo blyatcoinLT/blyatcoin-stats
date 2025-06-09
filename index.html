@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="lt">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>BLYATCOIN statistika</title>
+  <title>BLYATCOIN Stats</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -17,28 +17,28 @@
 </head>
 <body>
   <img src="https://i.imgur.com/3QDh6nX.webp" alt="BLYATCOIN Logo">
-  <h1>BLYATCOIN statistika</h1>
-  <div class="stat" id="burned">Sudeginta: ...</div>
-  <div class="stat" id="fees">Surinkta mokesčių: ...</div>
-  <div class="stat" id="supply">Bendras supply: ...</div>
+  <h1>BLYATCOIN Statistics</h1>
+  <div class="stat" id="burned">Burned: ...</div>
+  <div class="stat" id="fees">Fees Collected: ...</div>
+  <div class="stat" id="supply">Total Supply: ...</div>
 
   <!-- Ethers.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
   <script>
-    // ====== Parametrai ======
+    // ====== Parameters ======
     const RPC          = 'https://bsc-dataseed.binance.org/';
     const tokenAddress = '0xC73D20c5F78D8d1f7DF20eba17236e51680c0fC0';
     const burnAddress  = '0x000000000000000000000000000000000000dEaD';
     const feeReceiver  = '0x58E541A65e3F42515458E58c14933138BF13E5cC';
 
-    // ====== ABI su balanceOf ======
+    // ====== ABI with balanceOf ======
     const abi = [
       "function totalSupply() view returns (uint256)",
       "function decimals() view returns (uint8)",
       "function balanceOf(address) view returns (uint256)"
     ];
 
-    // ====== Skaitymas iš blockchain ======
+    // ====== Read from blockchain ======
     const provider = new ethers.providers.JsonRpcProvider(RPC);
     const contract = new ethers.Contract(tokenAddress, abi, provider);
 
@@ -53,12 +53,12 @@
 
         const fmt = x => ethers.utils.formatUnits(x, decimals);
 
-        document.getElementById('burned').innerText  = `Sudeginta: ${fmt(burnBN)} BLYAT`;
-        document.getElementById('fees').innerText    = `Surinkta mokesčių: ${fmt(feeBN)} BLYAT`;
-        document.getElementById('supply').innerText  = `Bendras supply: ${fmt(totalSupplyBN)} BLYAT`;
+        document.getElementById('burned').innerText  = `Burned: ${fmt(burnBN)} BLYAT`;
+        document.getElementById('fees').innerText    = `Fees Collected: ${fmt(feeBN)} BLYAT`;
+        document.getElementById('supply').innerText  = `Total Supply: ${fmt(totalSupplyBN)} BLYAT`;
       } catch (err) {
         console.error(err);
-        document.getElementById('burned').innerText = 'Klaida gaunant duomenis';
+        document.getElementById('burned').innerText = 'Error loading data';
         document.getElementById('fees').innerText   = '';
         document.getElementById('supply').innerText = '';
       }
@@ -68,3 +68,4 @@
   </script>
 </body>
 </html>
+
