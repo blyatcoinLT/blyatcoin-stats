@@ -1,71 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>BLYATCOIN Stats</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #000;
-      color: #f00;
-      text-align: center;
-      padding: 40px;
-    }
-    img { width: 120px; margin-bottom: 30px; }
-    .stat { font-size: 1.5em; margin: 20px 0; }
-  </style>
-</head>
-<body>
-  <img src="https://i.imgur.com/3QDh6nX.webp" alt="BLYATCOIN Logo">
-  <h1>BLYATCOIN Statistics</h1>
-  <div class="stat" id="burned">Burned: ...</div>
-  <div class="stat" id="fees">Fees Collected: ...</div>
-  <div class="stat" id="supply">Total Supply: ...</div>
+async function loadStats() {
+  try {
+    const totalSupplyBN = await contract.totalSupply();
+    console.log("Total Supply raw:", totalSupplyBN.toString());
 
-  <!-- Ethers.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
-  <script>
-    // ====== Parameters ======
-    const RPC          = 'https://bsc-dataseed.binance.org/';
-    const tokenAddress = '0xC73D20c5F78D8d1f7DF20eba17236e51680c0fC0';
-    const burnAddress  = '0x000000000000000000000000000000000000dEaD';
-    const feeReceiver  = '0x58E541A65e3F42515458E58c14933138BF13E5cC';
+    const decimals = await contract.decimals();
+    console.log("Decimals:", decimals);
 
-    // ====== ABI with balanceOf ======
-    const abi = [
-      "function totalSupply() view returns (uint256)",
-      "function decimals() view returns (uint8)",
-      "function balanceOf(address) view returns (uint256)"
-    ];
+    const burnBN = await contract.balanceOf(burnAddress);
+    console.log("Burned raw:", burnBN.toString());
 
-    // ====== Read from blockchain ======
-    const provider = new ethers.providers.JsonRpcProvider(RPC);
-    const contract = new ethers.Contract(tokenAddress, abi, provider);
-
-    async function loadStats() {
-      try {
-        const [totalSupplyBN, decimals, burnBN, feeBN] = await Promise.all([
-          contract.totalSupply(),
-          contract.decimals(),
-          contract.balanceOf(burnAddress),
-          contract.balanceOf(feeReceiver)
-        ]);
-
-        const fmt = x => ethers.utils.formatUnits(x, decimals);
-
-        document.getElementById('burned').innerText  = `Burned: ${fmt(burnBN)} BLYAT`;
-        document.getElementById('fees').innerText    = `Fees Collected: ${fmt(feeBN)} BLYAT`;
-        document.getElementById('supply').innerText  = `Total Supply: ${fmt(totalSupplyBN)} BLYAT`;
-      } catch (err) {
-        console.error(err);
-        document.getElementById('burned').innerText = 'Error loading data';
-        document.getElementById('fees').innerText   = '';
-        document.getElementById('supply').innerText = '';
-      }
-    }
-
-    loadStats();
-  </script>
-</body>
-</html>
-
+    const feeBN = await contract.balanceOf(feeReceiver);
+    console.log("Fees raw:", feeBN.toString());
+  } catch (err) {
+    console.error("Error in loadStats:", err);
+  }
+}
