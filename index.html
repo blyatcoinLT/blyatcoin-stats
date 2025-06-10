@@ -1,17 +1,72 @@
-async function loadStats() {
-  try {
-    const totalSupplyBN = await contract.totalSupply();
-    console.log("Total Supply raw:", totalSupplyBN.toString());
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BLYATCOIN Stats</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <style>
+    body {
+      background-color: black;
+      color: red;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    img {
+      max-width: 200px;
+      margin-bottom: 20px;
+    }
+    .stat {
+      font-size: 24px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <img src="https://i.imgur.com/3QDh6nX_d.webp?maxwidth=760&fidelity=grand" alt="BLYATCOIN Logo" />
+  <div class="stat" id="totalSupply">Total Supply: ...</div>
+  <div class="stat" id="burned">Burned: ...</div>
+  <div class="stat" id="fees">Fees Collected: ...</div>
 
-    const decimals = await contract.decimals();
-    console.log("Decimals:", decimals);
+  <script>
+    const provider = new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
+    const contractAddress = "0xC73D20c5F78D8d1f7DF20eba17236e51680c0fC0";
+    const burnAddress = "0x000000000000000000000000000000000000dEaD";
+    const feeReceiver = "0x58E541A65e3F42515458E58c14933138BF13E5cC";
 
-    const burnBN = await contract.balanceOf(burnAddress);
-    console.log("Burned raw:", burnBN.toString());
+    const abi = [
+      "function totalSupply() view returns (uint256)",
+      "function balanceOf(address) view returns (uint256)",
+      "function decimals() view returns (uint8)"
+    ];
 
-    const feeBN = await contract.balanceOf(feeReceiver);
-    console.log("Fees raw:", feeBN.toString());
-  } catch (err) {
-    console.error("Error in loadStats:", err);
-  }
-}
+    const contract = new ethers.Contract(contractAddress, abi, provider);
+
+    async function loadStats() {
+      try {
+        const [totalSupplyBN, decimals, burnBN, feeBN] = await Promise.all([
+          contract.totalSupply(),
+          contract.decimals(),
+          contract.balanceOf(burnAddress),
+          contract.balanceOf(feeReceiver)
+        ]);
+
+        const divisor = ethers.BigNumber.from("10").pow(decimals);
+
+        const totalSupply = totalSupplyBN.div(divisor).toString();
+        const burned = burnBN.div(divisor).toString();
+        const fees = feeBN.div(divisor).toString();
+
+        document.getElementById("totalSupply").innerText = `Total Supply: ${totalSupply}`;
+        document.getElementById("burned").innerText = `Burned: ${burned}`;
+        document.getElementById("fees").innerText = `Fees Collected: ${fees}`;
+      } catch (err) {
+        console.error("Error loading stats:", err);
+      }
+    }
+
+    loadStats();
+  </script>
+</body>
+</html>
