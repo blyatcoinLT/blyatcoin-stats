@@ -1,23 +1,30 @@
 <!DOCTYPE html>
-<html lang="lt">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>BLYATCOIN statistika</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BLYATCOIN Stats</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <style>
     body {
+      background-color: black;
+      color: red;
       font-family: Arial, sans-serif;
-      background: #000;
-      color: #f00;
       text-align: center;
-      padding: 40px;
+      padding: 20px;
     }
-    img { width: 120px; margin-bottom: 30px; }
-    .stat { font-size: 1.5em; margin: 20px 0; }
+    img {
+      max-width: 200px;
+      margin-bottom: 20px;
+    }
+    .stat {
+      font-size: 24px;
+      margin: 10px 0;
+    }
   </style>
 </head>
 <body>
-  <img src="https://i.imgur.com/3QDh6nX.webp" alt="BLYATCOIN Logo">
-  <h1>BLYATCOIN statistika</h1>
+  <img src="https://i.imgur.com/3QDh6nX_d.webp?maxwidth=760&fidelity=grand" alt="BLYATCOIN Logo" />
   <div class="stat" id="totalSupply">Total Supply: ...</div>
   <div class="stat" id="burned">Burned: ...</div>
   <div class="stat" id="fees">Fees Collected: ...</div>
