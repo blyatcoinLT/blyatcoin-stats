@@ -1,84 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BLYATCOIN Statistics</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
-  <style>
-    body {
-      background-color: #000;
-      color: #f00;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 40px;
-    }
-    .card {
-      background-color: #111;
-      border: 1px solid #f00;
-      border-radius: 20px;
-      padding: 20px;
-      margin: 20px auto;
-      width: 300px;
-      box-shadow: 0 0 10px #f00;
-    }
-    img {
-      max-width: 200px;
-      margin-bottom: 20px;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Test</title>
 </head>
-<body>
-  <img src="https://i.imgur.com/3QDh6nX.webp" alt="BLYATCOIN logo">
-
-  <div class="card">
-    <h2>Total Supply</h2>
-    <p id="totalSupply">Loading...</p>
-  </div>
-
-  <div class="card">
-    <h2>Burned</h2>
-    <p id="burned">Loading...</p>
-  </div>
-
-  <div class="card">
-    <h2>Fees Collected</h2>
-    <p id="fees">Loading...</p>
-  </div>
-
+<body style="background:#000; color:#f00; text-align:center;">
+  <img src="https://i.imgur.com/3QDh6nX.webp" style="max-width:200px;" alt="Logo">
+  <p id="test1">Text OK?</p>
   <script>
-    const contractAddress = "0x313a0fD7D5c7Cc6D0B087A3bACE42F0187DA8EcD";
-    const abi = [
-      "function totalSupply() view returns (uint256)",
-      "function decimals() view returns (uint8)",
-      "function balanceOf(address) view returns (uint256)"
-    ];
-    const burnAddress = "0x000000000000000000000000000000000000dEaD";
-    const feeReceiver = "0x58E541A65e3F42515458E58c14933138BF13E5cC";
-
-    async function loadStats() {
-      const provider = new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
-      const contract = new ethers.Contract(contractAddress, abi, provider);
-
-      try {
-        const [totalSupplyBN, decimals, burnedBN, feeBN] = await Promise.all([
-          contract.totalSupply(),
-          contract.decimals(),
-          contract.balanceOf(burnAddress),
-          contract.balanceOf(feeReceiver)
-        ]);
-
-        const divisor = 10 ** decimals;
-
-        document.getElementById("totalSupply").textContent = (totalSupplyBN / divisor).toLocaleString();
-        document.getElementById("burned").textContent = (burnedBN / divisor).toLocaleString();
-        document.getElementById("fees").textContent = (feeBN / divisor).toLocaleString();
-      } catch (err) {
-        console.error("Error loading stats:", err);
-      }
-    }
-
-    loadStats();
+    document.getElementById("test1").innerText = "✅ OK!";
   </script>
 </body>
 </html>
+
